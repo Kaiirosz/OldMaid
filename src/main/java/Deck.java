@@ -5,6 +5,7 @@ public class Deck  {
 
     public Deck(){
         cards = new ArrayList<>();
+        initializeDeck();
     }
 
     public void addCard(Card card){
