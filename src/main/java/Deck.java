@@ -12,6 +12,16 @@ public class Deck  {
         cards.add(card);
     }
 
+    public Card getFirstCard(){
+        Card firstCard = cards.getFirst();
+        cards.remove(firstCard);
+        return firstCard;
+    }
+
+    public int getNumberOfCards(){
+        return cards.size();
+    }
+
     public Card removeRandomQueen() {
         List<Card> queens = new ArrayList<>();
         for (Card c : cards) {

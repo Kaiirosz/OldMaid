@@ -15,4 +15,12 @@ public class Hand {
     public void discardPair(Card card){
         cards.remove(card);
     }
+
+    public int getNumberOfCards(){
+        return cards.size();
+    }
+
+    public List<Card> getAllCards(){
+        return cards;
+    }
 }

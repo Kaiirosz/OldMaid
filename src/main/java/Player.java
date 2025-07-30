@@ -4,7 +4,15 @@ public class Player {
 
     public Player(String name){
         this.name = name;
-        Hand hand = new Hand();
+        hand = new Hand();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Hand getHand() {
+        return hand;
     }
 
     public void addToHand(Card card){
