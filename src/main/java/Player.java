@@ -7,4 +7,13 @@ public class Player {
         Hand hand = new Hand();
     }
 
+    public void addToHand(Card card){
+        hand.addCard(card);
+    }
+
+    @Override
+    public String toString(){
+        return name;
+    }
+
 }

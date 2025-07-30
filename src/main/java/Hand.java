@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Hand<Card> {
+public class Hand {
     private final List<Card> cards;
 
     public Hand(){
