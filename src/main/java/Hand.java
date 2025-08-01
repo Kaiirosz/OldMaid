@@ -12,8 +12,20 @@ public class Hand {
         cards.add(card);
     }
 
-    public void discardPair(Card card){
+    public void removePair(Card card, Card anotherCard){
+        if (!cards.contains(card) || !cards.contains(anotherCard)){
+            throw new IllegalArgumentException("Incorrect cards!!");
+        }
         cards.remove(card);
+        cards.remove(anotherCard);
+    }
+
+    public String displayHiddenHand(){
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < cards.size(); i++) {
+            sb.append("\uD83C\uDCA0").append(" ");
+        }
+        return sb.toString();
     }
 
     public int getNumberOfCards(){
@@ -23,4 +35,6 @@ public class Hand {
     public List<Card> getAllCards(){
         return cards;
     }
+
+
 }

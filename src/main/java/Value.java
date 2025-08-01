@@ -19,4 +19,8 @@ public enum Value {
         }
         return this.ordinal() > value.ordinal();
     }
+
+    public boolean isSameValue(Value value){
+        return this.equals(value);
+    }
 }
