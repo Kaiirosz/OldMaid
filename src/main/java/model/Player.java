@@ -1,8 +1,10 @@
+package model;
+
 import java.util.List;
 
 public class Player {
     private final String name;
-    private Hand hand;
+    private final Hand hand;
 
     public Player(String name) {
         this.name = name;
@@ -25,14 +27,8 @@ public class Player {
         return hand.getNumberOfCards();
     }
 
-    public boolean discardPair(Card card, Card pairCard) {
-        List<Card> cardsInHand = hand.getAllCards();
-        if (!cardsInHand.contains(card) || !cardsInHand.contains(pairCard)) {
-            return false;
-        }
-        cardsInHand.remove(card);
-        cardsInHand.remove(pairCard);
-        return true;
+    public Card giveCardFromHand(int indexOfCard){
+        return hand.giveCard(indexOfCard);
     }
 
     public String removePair(Card card, Card anotherCard) {

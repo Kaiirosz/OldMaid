@@ -1,3 +1,8 @@
+package service;
+
+import model.*;
+import utils.GameUtils;
+
 import java.util.*;
 
 public class Game {
@@ -11,18 +16,16 @@ public class Game {
         this.players = new ArrayList<>();
         this.deck = new Deck();
         this.discardPile = new DiscardPile();
+
     }
 
     public void start() {
         System.out.println("Old Maid");
         System.out.println("-----");
         initializePlayers();
-        dealCards();
         System.out.println("Game Start!!");
         System.out.println("---------------------------------------");
         System.out.println("---------------------------------------");
-        displayAllPlayerHands();
-        discardPairs();
         continueGameUntilThereIsAnOldMaid();
     }
 
@@ -75,54 +78,43 @@ public class Game {
         }
     }
 
-    public void discardPairs() {
-        for (Player currentPlayer : players) {
-            Map<Value, List<Card>> cardsWithSameValueMap = new HashMap<>();
-//            currentPlayer.displayHand();
-            List<Card> cardsInHand = currentPlayer.getAllCards();
-            for (Card c : cardsInHand) {
-                cardsWithSameValueMap.computeIfAbsent(c.getValue(), k -> new ArrayList<>()).add(c);
-            }
-            for (List<Card> cards : cardsWithSameValueMap.values()) {
-                for (int j = 0; j < cards.size() - 1; j += 2) {
-                    Card currentCard = cards.get(j);
-                    Card nextCard = cards.get(j + 1);
-                    if (currentPlayer.getName().equals("Player 1")) {
-                        System.out.println("You discarded: " + currentPlayer.removePair(currentCard, nextCard) + "!!");
-                    } else {
-                        System.out.println(currentPlayer.getName() + " discarded: " + currentPlayer.removePair(currentCard, nextCard) + "!!");
-                    }
-                    try {
-                        Thread.sleep(500);
-                    }
-                    catch (Exception e){
-                        System.out.println("Exception: " + e);
-                    }
-                    discard(currentCard);
-                    discard(nextCard);
+    public void discardPairsFor(Player p) {
+        Map<Value, List<Card>> cardsWithSameValueMap = new HashMap<>();
+        List<Card> cardsInHand = p.getAllCards();
+        for (Card c : cardsInHand) {
+            cardsWithSameValueMap.computeIfAbsent(c.getValue(), k -> new ArrayList<>()).add(c);
+        }
+        for (List<Card> cards : cardsWithSameValueMap.values()) {
+            for (int i = 0; i < cards.size() - 1; i += 2) {
+                Card currentCard = cards.get(i);
+                Card nextCard = cards.get(i + 1);
+                if (p.getName().equals("Player 1")) {
+                    System.out.println("You discarded: " + p.removePair(currentCard, nextCard) + "!!");
+                } else {
+                    System.out.println(p.getName() + " discarded: " + p.removePair(currentCard, nextCard) + "!!");
                 }
+                GameUtils.pauseForEffect(1000);
+                discard(currentCard);
+                discard(nextCard);
             }
         }
-        checkForWinners();
-        displayAllPlayerHands();
     }
 
-    public boolean checkForWinners(){
+    public boolean checkForWinners() {
         Iterator<Player> iterator = players.iterator();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             Player p = iterator.next();
-            if (players.size() == 1){
+            int playersSize = players.size();
+            if (playersSize == 1) {
                 System.out.println("There is only one player left.");
-                if (p.getName().equals("Player 1")){
+                if (p.getName().equals("Player 1")) {
                     System.out.println("You are an old maid.");
-                    return true;
+                } else {
+                    System.out.println(p.getName() + " is an old maid.");
                 }
-                else {
-                    System.out.println(p.getName() + " is an old maid");
-                    return true;
-                }
+                return true;
             }
-            if (p.getHandSize() == 0){
+            if (p.getHandSize() == 0) {
                 System.out.println(p.getName() + " discarded all of their cards!");
                 iterator.remove();
             }
@@ -130,36 +122,63 @@ public class Game {
         return false;
     }
 
-    public void continueGameUntilThereIsAnOldMaid(){
-        boolean gameIsOver = false;
-        while (!gameIsOver){
+    public void continueGameUntilThereIsAnOldMaid() {
+        dealCards();
+        displayAllPlayerHands();
+        for (Player p : players) {
+            discardPairsFor(p);
+        }
+        boolean gameIsOver = checkForWinners();
+        while (!gameIsOver) {
             System.out.println("Enter any key to get a card from next player or 'D' to look at discard pile");
             String input = sc.nextLine();
-            if (input.equalsIgnoreCase("D")){
+            if (input.equalsIgnoreCase("D")) {
                 printAllDiscardedCards();
-            }
-            else {
-                for (int i = 0; i < players.size(); i++){
+            } else {
+                for (int i = 0; i < players.size(); i++) {
                     getCardFromOtherPlayer(i);
+                    gameIsOver = checkForWinners();
+                    if (gameIsOver) {
+                        break;
+                    }
                 }
             }
+            displayAllPlayerHands();
         }
     }
 
-    public void getCardFromOtherPlayer(int playerIndex){
+    public void getCardFromOtherPlayer(int playerIndex) {
         Player player = players.get(playerIndex);
         int nextPlayerIndex;
-        if (playerIndex == players.size() - 1){
+        if (playerIndex == players.size() - 1) {
             nextPlayerIndex = 0;
-        }
-        else {
+        } else {
             nextPlayerIndex = playerIndex + 1;
         }
         Player nextPlayer = players.get(nextPlayerIndex);
-        System.out.println("From left to right enter the number of the card you want to get.");
-        nextPlayer.displayHiddenHand();
-        int n = sc.nextInt();
-        sc.nextLine();
+        if (player.getName().equalsIgnoreCase("Player 1")) {
+            while (true) {
+                System.out.println("From left to right enter the positional number of the card you want to get.");
+                nextPlayer.displayHiddenHand();
+                int inputPosition = sc.nextInt() - 1;
+                sc.nextLine();
+                System.out.println(inputPosition);
+                if (inputPosition > nextPlayer.getHandSize() - 1 || inputPosition <= 0) {
+                    System.out.println("Invalid Number. Try Again.");
+                } else {
+                    Card acquiredCard = nextPlayer.giveCardFromHand(inputPosition);
+                    player.addToHand(acquiredCard);
+                    System.out.println("You drew a " + acquiredCard.getCardNotation() + "!");
+                    break;
+                }
+            }
+        } else {
+            Random random = new Random();
+            Card acquiredCard = nextPlayer.giveCardFromHand(random.nextInt(nextPlayer.getHandSize()));
+            player.addToHand(acquiredCard);
+            System.out.println(player.getName() + " drew a card.");
+        }
+        discardPairsFor(player);
     }
 
 

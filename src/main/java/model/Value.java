@@ -1,3 +1,5 @@
+package model;
+
 public enum Value {
     ACE,
     TWO,

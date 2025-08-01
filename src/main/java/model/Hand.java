@@ -1,3 +1,5 @@
+package model;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +20,12 @@ public class Hand {
         }
         cards.remove(card);
         cards.remove(anotherCard);
+    }
+
+    public Card giveCard(int index){
+        Card givenCard = cards.get(index);
+        cards.remove(givenCard);
+        return givenCard;
     }
 
     public String displayHiddenHand(){
