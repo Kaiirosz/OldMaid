@@ -1,3 +1,5 @@
+package model;
+
 public enum Value {
     ACE,
     TWO,
@@ -18,5 +20,9 @@ public enum Value {
             return true;
         }
         return this.ordinal() > value.ordinal();
+    }
+
+    public boolean isSameValue(Value value){
+        return this.equals(value);
     }
 }

@@ -1,3 +1,5 @@
+package model;
+
 import java.util.Objects;
 
 public class Card {
@@ -31,7 +33,7 @@ public class Card {
             String firstLetter = getValueName().split("")[0];
             return firstLetter + icon;
         }
-        return value.ordinal() + icon;
+        return value.ordinal() + 1 + icon;
     }
 
     @Override
