@@ -13,16 +13,6 @@ public enum Value {
     TEN,
     JACK,
     QUEEN,
-    KING;
+    KING
 
-    public boolean isHigherValue(Value value){
-        if (ordinal() == 1){
-            return true;
-        }
-        return this.ordinal() > value.ordinal();
-    }
-
-    public boolean isSameValue(Value value){
-        return this.equals(value);
-    }
 }

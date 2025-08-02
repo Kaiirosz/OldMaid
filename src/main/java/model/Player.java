@@ -15,9 +15,6 @@ public class Player {
         return name;
     }
 
-    public Hand getHand() {
-        return hand;
-    }
 
     public void addToHand(Card card) {
         hand.addCard(card);
