@@ -1,18 +1,20 @@
 package service;
 
+import io.ConsoleIO;
+import io.GameIO;
 import model.*;
 import utils.GameUtils;
 
 import java.util.*;
 
 public class Game {
-    private final Scanner sc;
+    private final GameIO io;
     private final List<Player> players;
     private final Deck deck;
     private final DiscardPile discardPile;
 
-    public Game() {
-        this.sc = new Scanner(System.in);
+    public Game(GameIO io) {
+        this.io = io;
         this.players = new ArrayList<>();
         this.deck = new Deck();
         this.discardPile = new DiscardPile();
@@ -20,21 +22,21 @@ public class Game {
     }
 
     public void start() {
-        System.out.println("Old Maid");
-        System.out.println("-----");
+        io.println("Old Maid");
+        io.printSeparator();
         initializePlayers();
-        System.out.println("Game Start!!");
-        System.out.println("---------------------------------------");
-        System.out.println("---------------------------------------");
+        io.println("Game Start!!");
+        io.printSeparator();
+        io.printSeparator();
         continueGameUntilThereIsAnOldMaid();
     }
 
     public void initializePlayers() {
         int numOfPlayers;
         while (true) {
-            System.out.println("Choose the number of players:");
-            System.out.println("2P | 3P | 4P | 5P | 6P");
-            String input = sc.nextLine();
+            io.println("Choose the number of players:");
+            io.println("2P | 3P | 4P | 5P | 6P");
+            String input = io.readNextLine();
             switch (input) {
                 case "2P" -> numOfPlayers = 2;
                 case "3P" -> numOfPlayers = 3;
@@ -42,7 +44,7 @@ public class Game {
                 case "5P" -> numOfPlayers = 5;
                 case "6P" -> numOfPlayers = 6;
                 default -> {
-                    System.out.println("Invalid Input! Choose from the options above.");
+                    io.println("Invalid Input! Choose from the options above.");
                     continue;
                 }
             }
@@ -67,11 +69,13 @@ public class Game {
                 index = 0;
             }
         }
-        System.out.println("Cards Dealt.");
+        io.println("Cards Dealt.");
     }
 
     public void displayAllPlayerHands() {
-        players.getFirst().displayHand();
+        if (players.getFirst().getName().equals("Player 1")){
+            players.getFirst().displayHand();
+        }
         for (int i = 1; i < players.size(); i++) {
             Player currentPlayer = players.get(i);
             currentPlayer.displayHiddenHand();
@@ -89,9 +93,9 @@ public class Game {
                 Card currentCard = cards.get(i);
                 Card nextCard = cards.get(i + 1);
                 if (p.getName().equals("Player 1")) {
-                    System.out.println("You discarded: " + p.removePair(currentCard, nextCard) + "!!");
+                    io.println("You discarded: " + p.removePair(currentCard, nextCard) + "!!");
                 } else {
-                    System.out.println(p.getName() + " discarded: " + p.removePair(currentCard, nextCard) + "!!");
+                    io.println(p.getName() + " discarded: " + p.removePair(currentCard, nextCard) + "!!");
                 }
                 GameUtils.pauseForEffect(1000);
                 discard(currentCard);
@@ -106,16 +110,16 @@ public class Game {
             Player p = iterator.next();
             int playersSize = players.size();
             if (playersSize == 1) {
-                System.out.println("There is only one player left.");
+                io.println("There is only one player left.");
                 if (p.getName().equals("Player 1")) {
-                    System.out.println("You are an old maid.");
+                    io.println("You are an old maid.");
                 } else {
-                    System.out.println(p.getName() + " is an old maid.");
+                    io.println(p.getName() + " is an old maid.");
                 }
                 return true;
             }
             if (p.getHandSize() == 0) {
-                System.out.println(p.getName() + " discarded all of their cards!");
+                io.println(p.getName() + " discarded all of their cards!");
                 iterator.remove();
             }
         }
@@ -130,8 +134,11 @@ public class Game {
         }
         boolean gameIsOver = checkForWinners();
         while (!gameIsOver) {
-            System.out.println("Enter any key to get a card from next player or 'D' to look at discard pile");
-            String input = sc.nextLine();
+            displayAllPlayerHands();
+            if (players.getFirst().getName().equals("Player 1")){
+                io.println("Enter any key to get a card from next player or 'D' to look at discard pile");
+            }
+            String input = io.readNextLine();
             if (input.equalsIgnoreCase("D")) {
                 printAllDiscardedCards();
             } else {
@@ -141,9 +148,9 @@ public class Game {
                     if (gameIsOver) {
                         break;
                     }
+                    io.printSeparator();
                 }
             }
-            displayAllPlayerHands();
         }
     }
 
@@ -158,17 +165,17 @@ public class Game {
         Player nextPlayer = players.get(nextPlayerIndex);
         if (player.getName().equalsIgnoreCase("Player 1")) {
             while (true) {
-                System.out.println("From left to right enter the positional number of the card you want to get.");
+                io.println("From left to right enter the positional number of the card you want to get.");
+                player.displayHand();
                 nextPlayer.displayHiddenHand();
-                int inputPosition = sc.nextInt() - 1;
-                sc.nextLine();
-                System.out.println(inputPosition);
-                if (inputPosition > nextPlayer.getHandSize() - 1 || inputPosition <= 0) {
-                    System.out.println("Invalid Number. Try Again.");
+                nextPlayer.displayHand();
+                int inputPosition = io.readInt() - 1;
+                if (inputPosition > nextPlayer.getHandSize() - 1 || inputPosition < 0) {
+                    io.println("Invalid Number. Try Again.");
                 } else {
                     Card acquiredCard = nextPlayer.giveCardFromHand(inputPosition);
                     player.addToHand(acquiredCard);
-                    System.out.println("You drew a " + acquiredCard.getCardNotation() + "!");
+                    io.println("You drew a " + acquiredCard.getCardNotation() + "!");
                     break;
                 }
             }
@@ -176,7 +183,8 @@ public class Game {
             Random random = new Random();
             Card acquiredCard = nextPlayer.giveCardFromHand(random.nextInt(nextPlayer.getHandSize()));
             player.addToHand(acquiredCard);
-            System.out.println(player.getName() + " drew a card.");
+            io.println(player.getName() + " drew a card.");
+            GameUtils.pauseForEffect(2000);
         }
         discardPairsFor(player);
     }
@@ -191,6 +199,5 @@ public class Game {
             System.out.println(c);
         }
     }
-
 }
 

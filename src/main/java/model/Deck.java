@@ -50,8 +50,4 @@ public class Deck  {
             addCard(new Card(values[i], Suit.CLOVERS,"♣"));
         }
     }
-    public List<Card> getAllCards(){
-        return cards;
-    }
-
 }
