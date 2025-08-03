@@ -1,6 +1,4 @@
 package service;
-
-import io.ConsoleIO;
 import io.GameIO;
 import model.*;
 import utils.GameUtils;
@@ -18,7 +16,6 @@ public class Game {
         this.players = new ArrayList<>();
         this.deck = new Deck();
         this.discardPile = new DiscardPile();
-
     }
 
     public void start() {
@@ -167,6 +164,7 @@ public class Game {
             while (true) {
                 io.println("From left to right enter the positional number of the card you want to get.");
                 player.displayHand();
+                nextPlayer.displayHiddenHand();
                 nextPlayer.displayHand();
                 int inputPosition = io.readInt() - 1;
                 if (inputPosition > nextPlayer.getHandSize() - 1 || inputPosition < 0) {
