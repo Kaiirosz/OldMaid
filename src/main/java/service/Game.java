@@ -165,7 +165,6 @@ public class Game {
                 io.println("From left to right enter the positional number of the card you want to get.");
                 player.displayHand();
                 nextPlayer.displayHiddenHand();
-                nextPlayer.displayHand();
                 int inputPosition = io.readInt() - 1;
                 if (inputPosition > nextPlayer.getHandSize() - 1 || inputPosition < 0) {
                     io.println("Invalid Number. Try Again.");
